@@ -1,2 +1,3 @@
-# MLOpsEmotion
-MLOps class project
+# MachLeData
+
+project for MLops class
