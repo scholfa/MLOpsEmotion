@@ -1,0 +1,2 @@
+# MLOpsEmotion
+MLOps class project
