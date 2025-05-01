@@ -1,0 +1,81 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+.venv/
+env/
+venv/
+pip-wheel-metadata/
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+
+# Jupyter/IPython
+.ipynb_checkpoints/
+
+# Logs and runtime files
+*.log
+*.out
+*.pid
+*.sqlite
+*.db
+*.tmp
+
+# Streamlit cache and history
+.streamlit/
+.history/
+
+# DVC
+*.dvc
+.dvc/
+.dvc/cache/
+.dvc/tmp/
+.dvc/config.local
+data/**/*
+!data/.gitkeep
+
+# Secrets and credentials
+.secret/
+.secret*/  # .secret/, .secrets/
+*.key
+*.pem
+*.json
+*.env
+!requirements.txt
+
+# Ignore mounted credentials
+**/gdrive-key.json
+**/gdrive-user-credentials.json
+
+# Prefect files
+.prefect/
+*.prefect
+
+# Docker
+*.dockerfile
+Dockerfile.*
+docker-compose.override.yml
+
+# VS Code / devcontainer
+.vscode/
+.devcontainer/.env
+.devcontainer/configure_dvc_gdrive.sh
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Model files and artifacts
+models/*.pkl
+models/*.pt
+models/*.joblib
+
+# MLflow local runs
+mlruns/

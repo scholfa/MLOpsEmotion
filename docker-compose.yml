@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - mlflow
+      - prefect
+    command: streamlit run app/streamlit_app.py --server.port=8501
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.22.0
+    ports:
+      - "5000:5000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://0.0.0.0:5000
+    command: mlflow server --host 0.0.0.0 --port 5000
+
+  prefect:
+    image: prefecthq/prefect:2.20.18-python3.12
+    ports:
+      - "4200:4200"
+    environment:
+      PREFECT_UI_URL: http://localhost:4200
+    entrypoint: ["prefect", "server", "start"]
