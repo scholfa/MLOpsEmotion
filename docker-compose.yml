@@ -6,17 +6,15 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app
+      - .:/app:Z #:Z is for SELinux compatibility remove if not needed
     ports:
       - "8501:8501"
     depends_on:
       - mlflow
       - prefect
+      - prefect-agent
     command: |
-      streamlit run app/streamlit_app.py \
-      --server.port=8501 \
-      --server.enableCORS=false \
-      --server.enableXsrfProtection=false
+      streamlit run app/streamlit_app.py --server.port=8501 --server.enableCORS=false --server.enableXsrfProtection=false
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.22.0
@@ -40,11 +38,8 @@ services:
       - prefect
     working_dir: /app
     volumes:
-      - .:/app
+      - .:/app:Z #:Z is for SELinux compatibility remove if not needed
     environment:
       - PREFECT_API_URL=http://prefect:4200/api
     entrypoint: ["/bin/sh", "-c"]
-    command: |
-      chmod +x /app/deploy.sh && \
-      /app/deploy.sh && \
-      prefect agent start --work-queue default
+    command: chmod +x /app/deploy.sh && /app/deploy.sh && prefect agent start --work-queue default
