@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env
     volumes:
       - .:/app:Z #:Z is for SELinux compatibility remove if not needed
     ports:
@@ -12,9 +14,7 @@ services:
     depends_on:
       - mlflow
       - prefect
-      - prefect-agent
-    command: |
-      streamlit run app/streamlit_app.py --server.port=8501 --server.enableCORS=false --server.enableXsrfProtection=false
+    command: streamlit run app/streamlit_app.py --server.port=8501 --server.enableCORS=false --server.enableXsrfProtection=false
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.22.0
