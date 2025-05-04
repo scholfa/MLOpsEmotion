@@ -7,18 +7,30 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+    working_dir: /app
     volumes:
-      - .:/app:Z
+      - app-code:/app:ro              # Mount source code as read-only
+      - app-data:/app/data            # Mount writable data directory
     ports:
       - "8501:8501"
     depends_on:
       - mlflow
       - prefect
+    environment:
+      - PREFECT_API_URL=http://prefect:4200/api
+    command: >
+      streamlit run app/streamlit_app.py
+      --server.port=8501
+      --server.enableCORS=false
+      --server.enableXsrfProtection=false
+
+  inference:
+    image: pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
     working_dir: /app
-    command: streamlit run app/streamlit_app.py \
-             --server.port=8501 \
-             --server.enableCORS=false \
-             --server.enableXsrfProtection=false
+    volumes:
+      - app-code:/app:ro
+      - app-data:/app/data
+    command: tail -f /dev/null
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.22.0
@@ -26,7 +38,8 @@ services:
       - "5000:5000"
     environment:
       - MLFLOW_TRACKING_URI=http://0.0.0.0:5000
-    command: mlflow server --host 0.0.0.0 --port 5000
+    volumes:
+      - app-data:/app/data
 
   prefect:
     image: prefecthq/prefect:3.4.0-python3.12
@@ -35,12 +48,15 @@ services:
     environment:
       - PREFECT_UI_URL=http://localhost:4200
     entrypoint: ["prefect", "server", "start"]
+    volumes:
+      - app-data:/app/data
 
   prefect-worker:
     image: prefecthq/prefect:3.4.0-python3.12
     working_dir: /app
     volumes:
-      - .:/app:Z
+      - app-code:/app:ro
+      - app-data:/app/data
     depends_on:
       - prefect
     environment:
@@ -50,3 +66,7 @@ services:
       prefect deploy &&
       prefect worker start --pool 'default-pool'
       "
+
+volumes:
+  app-code:
+  app-data:
