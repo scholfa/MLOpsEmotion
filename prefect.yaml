@@ -1,0 +1,11 @@
+prefect-version: 3.4.0
+
+deployments:
+  - name: dvc-pipeline
+    entrypoint: flows/dvc_pipeline.py:main
+    work_pool:
+      name: default-pool
+      type: process
+    tags: [mlops]
+    parameters:
+      some_param: "value"

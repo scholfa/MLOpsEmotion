@@ -5,4 +5,4 @@ librosa==0.11.0
 transformers==4.51.3
 dvc[gdrive]==3.59.1
 mlflow==2.22.0
-prefect==2.20.18
+prefect==3.4.0

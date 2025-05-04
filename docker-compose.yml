@@ -8,13 +8,17 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/app:Z #:Z is for SELinux compatibility remove if not needed
+      - .:/app:Z
     ports:
       - "8501:8501"
     depends_on:
       - mlflow
       - prefect
-    command: streamlit run app/streamlit_app.py --server.port=8501 --server.enableCORS=false --server.enableXsrfProtection=false
+    working_dir: /app
+    command: streamlit run app/streamlit_app.py \
+             --server.port=8501 \
+             --server.enableCORS=false \
+             --server.enableXsrfProtection=false
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.22.0
@@ -25,21 +29,24 @@ services:
     command: mlflow server --host 0.0.0.0 --port 5000
 
   prefect:
-    image: docker.io/prefecthq/prefect:2.20.18-python3.12
+    image: prefecthq/prefect:3.4.0-python3.12
     ports:
       - "4200:4200"
     environment:
       - PREFECT_UI_URL=http://localhost:4200
     entrypoint: ["prefect", "server", "start"]
 
-  prefect-agent:
-    image: docker.io/prefecthq/prefect:2.20.18-python3.12
-    depends_on:
-      - prefect
+  prefect-worker:
+    image: prefecthq/prefect:3.4.0-python3.12
     working_dir: /app
     volumes:
-      - .:/app:Z #:Z is for SELinux compatibility remove if not needed
+      - .:/app:Z
+    depends_on:
+      - prefect
     environment:
       - PREFECT_API_URL=http://prefect:4200/api
-    entrypoint: ["/bin/sh", "-c"]
-    command: chmod +x /app/deploy.sh && /app/deploy.sh && prefect agent start --work-queue default
+    command: >
+      sh -c "
+      prefect deploy &&
+      prefect worker start --pool 'default-pool'
+      "
