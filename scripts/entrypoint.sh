@@ -23,7 +23,7 @@ done
 echo "✅ MLflow is up!"
 
 echo "🚀 Starting Prefect server..."
-prefect server start &
+prefect server start --host 0.0.0.0 --port 4200 &
 
 echo "⏳ Waiting for Prefect at http://localhost:4200/health ..."
 until curl --silent --fail http://localhost:4200/health; do
@@ -36,7 +36,7 @@ POOL_NAME="default-pool"
 QUEUE_NAME="default-pool"
 
 # 1) Create the pool if it doesn’t exist
-if ! prefect work-pool list --output json | grep -q "\"name\":\s*\"$POOL_NAME\""; then
+if ! prefect work-pool ls --output json | grep -q "\"name\":\s*\"$POOL_NAME\""; then
   echo "🔨 Creating Prefect work-pool '$POOL_NAME' (process)…"
   prefect work-pool create "$POOL_NAME" --type process
 else
@@ -44,7 +44,7 @@ else
 fi
 
 # 2) Create the queue if it doesn’t exist
-if ! prefect work-queue list --output json | grep -q "\"name\":\s*\"$QUEUE_NAME\""; then
+if ! prefect work-queue ls --output json | grep -q "\"name\":\s*\"$QUEUE_NAME\""; then
   echo "🔨 Creating Prefect work-queue '$QUEUE_NAME' in pool '$POOL_NAME'…"
   prefect work-queue create "$QUEUE_NAME" --pool "$POOL_NAME"
 else
