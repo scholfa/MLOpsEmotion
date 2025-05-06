@@ -8,10 +8,11 @@ WORKDIR /app
 # System dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
+    curl \
     ffmpeg \
     libsndfile1 \
     build-essential \
-  && rm -rf /var/lib/apt/lists/*
+   && rm -rf /var/lib/apt/lists/*
 
 # Support VS Code Dev Containers / Podman user mapping
 RUN useradd -ms /bin/bash vscode
