@@ -9,6 +9,12 @@ mkdir -p /app/data/mlruns
 touch    /app/data/mlruns.db
 chmod -R a+rw /app/data
 
+echo "⏳ Waiting for inference API at http://localhost:8000/health ...(takes a while)"
+until curl --silent --fail http://localhost:8000/health; do
+  sleep 1
+done
+echo "✅ Inference API is ready!"
+
 echo "🚀 Starting MLflow server..."
 mlflow server \
   --backend-store-uri sqlite:////app/data/mlruns.db \
