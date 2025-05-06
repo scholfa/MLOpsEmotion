@@ -31,9 +31,29 @@ until curl --silent --fail http://localhost:4200/health; do
 done
 echo "✅ Prefect server is healthy!"
 
+echo "🔧 Configuring Prefect server..."
+POOL_NAME="default-pool"
+QUEUE_NAME="default-pool"
+
+# 1) Create the pool if it doesn’t exist
+if ! prefect work-pool list --output json | grep -q "\"name\":\s*\"$POOL_NAME\""; then
+  echo "🔨 Creating Prefect work-pool '$POOL_NAME' (process)…"
+  prefect work-pool create "$POOL_NAME" --type process
+else
+  echo "✅ Prefect work-pool '$POOL_NAME' already exists"
+fi
+
+# 2) Create the queue if it doesn’t exist
+if ! prefect work-queue list --output json | grep -q "\"name\":\s*\"$QUEUE_NAME\""; then
+  echo "🔨 Creating Prefect work-queue '$QUEUE_NAME' in pool '$POOL_NAME'…"
+  prefect work-queue create "$QUEUE_NAME" --pool "$POOL_NAME"
+else
+  echo "✅ Prefect work-queue '$QUEUE_NAME' already exists"
+fi
+
 export PREFECT_API_URL="http://localhost:4200/api"
-echo "🚀 Starting Prefect worker..."
-prefect worker start --work-queue default &
+echo "🚀 Starting Prefect worker on queue '$QUEUE_NAME'…"
+prefect worker start --work-queue "$QUEUE_NAME" &
 
 # give the worker a moment to spin up
 sleep 2
