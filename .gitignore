@@ -1,0 +1,52 @@
+# ─── Python bytecode & packaging ─────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+*.egg-info/
+
+# ─── Virtual environments & env files ────────────────────────────────────────
+.env
+.env.*
+venv/
+.venv/
+env/
+
+# ─── DVC ───────────────────────────────────────────────────────────────────
+.dvc/
+!/.dvc/config 
+.dvc/cache/
+.dvc/tmp/
+
+# ─── Data & model outputs ──────────────────────────────────────────────────
+data/
+metadata/
+models/
+
+# ─── MLflow ────────────────────────────────────────────────────────────────
+mlruns/
+app/data/mlruns/
+
+# ─── Prefect ───────────────────────────────────────────────────────────────
+.prefect/
+
+# ─── Jupyter ──────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ─── Logs & databases ──────────────────────────────────────────────────────
+*.log
+*.db
+mlflow.db
+
+# ─── Secrets & credentials ─────────────────────────────────────────────────
+.secret/
+*.json
+
+# ─── IDE / editor folders ──────────────────────────────────────────────────
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# ─── Docker / Compose overrides ─────────────────────────────────────────────
+docker-compose.override.yml

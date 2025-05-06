@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+
+  # ─── App: Streamlit + MLflow + Prefect + DVC ───
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mlopsemotion-app
+    env_file:
+      - .env
+    working_dir: /app
+    volumes:
+      - app-data:/app/data
+      - ${HOME}/.secrets/gdrive-sa.json:/app/secret/gdrive-sa.json:ro,z
+    ports:
+      - "8501:8501"  # Streamlit
+      - "5000:5000"  # MLflow
+      - "4200:4200"  # Prefect UI/API
+
+  # ─── Inference: PyTorch + FastAPI ───
+  inference:
+    build:
+      context: .
+      dockerfile: Dockerfile.inference
+    image: mlopsemotion-inference
+    env_file:
+      - .env
+    working_dir: /app
+    ports:
+      - "8000:8000"
+    volumes:
+      - app-data:/app/data
+
+volumes:
+  app-data:

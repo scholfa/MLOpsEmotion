@@ -1,0 +1,31 @@
+stages:
+  preprocess:
+    cmd: python scripts/preprocess.py
+    deps:
+      - data/raw/
+      - scripts/preprocess.py
+    outs:
+      - data/processed/
+
+  metadata:
+    cmd: python scripts/metadata.py
+    deps:
+      - data/raw/
+      - scripts/metadata.py
+    outs:
+      - metadata/audio_metadata.json
+
+  inference:
+    cmd: python scripts/inference.py
+    deps:
+      - data/processed/
+      - scripts/inference.py
+    outs:
+      - data/inference_output/
+      - metadata/inference_log.json
+
+  evaluate:
+    cmd: python scripts/evaluate_model.py
+    deps:
+      - metadata/inference_log.json
+    outs: []
