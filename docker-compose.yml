@@ -1,16 +1,17 @@
 version: "3.9"
 
 services:
+  # Your Streamlit App
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    image: mlopsemotion-app
     env_file:
       - .env
     working_dir: /app
     volumes:
-      - app-code:/app:ro              # Mount source code as read-only
-      - app-data:/app/data            # Mount writable data directory
+      - app-data:/app/data
     ports:
       - "8501:8501"
     depends_on:
@@ -24,23 +25,7 @@ services:
       --server.enableCORS=false
       --server.enableXsrfProtection=false
 
-  inference:
-    image: docker.io/pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
-    working_dir: /app
-    volumes:
-      - app-code:/app:ro
-      - app-data:/app/data
-    command: tail -f /dev/null
-
-  mlflow:
-    image: ghcr.io/mlflow/mlflow:v2.22.0
-    ports:
-      - "5000:5000"
-    environment:
-      - MLFLOW_TRACKING_URI=http://0.0.0.0:5000
-    volumes:
-      - app-data:/app/data
-
+  # Prefect Server (UI/API)
   prefect:
     image: docker.io/prefecthq/prefect:3.4.0-python3.12
     ports:
@@ -51,11 +36,12 @@ services:
     volumes:
       - app-data:/app/data
 
+  # Prefect Worker
   prefect-worker:
     image: docker.io/prefecthq/prefect:3.4.0-python3.12
-    working_dir: /app
+    working_dir: /shared
     volumes:
-      - app-code:/app:ro
+      - app-shared:/shared:ro
       - app-data:/app/data
     depends_on:
       - prefect
@@ -63,10 +49,40 @@ services:
       - PREFECT_API_URL=http://prefect:4200/api
     command: >
       sh -c "
-      prefect deploy &&
-      prefect worker start --pool 'default-pool'
-      "
+      prefect deploy prefect.yaml &&
+      prefect worker start --pool 'default-pool'"
+
+  # MLflow Tracking Server
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.22.0
+    ports:
+      - "5000:5000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://0.0.0.0:5000
+    volumes:
+      - app-data:/app/data
+
+  # PyTorch-based inference container
+  inference:
+    image: docker.io/pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
+    working_dir: /app
+    volumes:
+      - app-shared:/app/shared:ro
+      - app-data:/app/data
+    command: tail -f /dev/null
+
+  # Init container to copy flows + config to shared volume
+  init-shared:
+    image: alpine
+    volumes:
+      - app-shared:/shared
+      - .:/source:ro,z
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "mkdir -p /shared/flows &&
+       cp -r /source/flows /shared &&
+       cp /source/prefect.yaml /shared"
 
 volumes:
-  app-code:
   app-data:
+  app-shared:

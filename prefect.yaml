@@ -1,11 +1,16 @@
 prefect-version: 3.4.0
+name: MLOpsEmotion
+
+
+build: null
+push: null
+pull: null
 
 deployments:
   - name: dvc-pipeline
-    entrypoint: flows/dvc_pipeline.py:main
+    entrypoint: flows/dvc_pipeline.py:dvc_pipeline
+    parameters: {}
     work_pool:
       name: default-pool
-      type: process
-    tags: [mlops]
-    parameters:
-      some_param: "value"
+      work_queue_name: null
+      job_variables: {}
