@@ -16,6 +16,11 @@ feature_extractor = AutoFeatureExtractor.from_pretrained(HF_MODEL)
 model = AutoModelForAudioClassification.from_pretrained(HF_MODEL).to(DEVICE)
 id2label = model.config.id2label
 
+# ready check
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 @app.post("/infer")
 async def infer(file: UploadFile = File(...)):
     if file.content_type not in ("audio/wav", "audio/x-wav"):
