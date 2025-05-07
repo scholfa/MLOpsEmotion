@@ -2,7 +2,6 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from transformers import AutoModelForAudioClassification, AutoFeatureExtractor
 import torch
 import numpy as np
-import io
 import os
 
 app = FastAPI(title="Emotion Recognition API")
@@ -26,26 +25,28 @@ async def infer(file: UploadFile = File(...)):
     if file.content_type not in ("audio/wav", "audio/x-wav"):
         raise HTTPException(415, "Please upload WAV files only.")
 
+    # Read the file
     data = await file.read()
+
     # Extract features
     inputs = feature_extractor(
         data,
         sampling_rate=feature_extractor.sampling_rate,
+        truncation=True,
+        max_length=feature_extractor.max_length,
         return_tensors="pt",
     ).to(DEVICE)
 
     # Model forward
     with torch.no_grad():
-        logits = model(**inputs).logits[0]
-        probs  = torch.nn.functional.softmax(logits, dim=-1).cpu().numpy()
+        outputs = model(**inputs)
 
-    # Return list of (emotion, score)
-    response = [
-        {"emotion": id2label[i], "score": float(probs[i])}
-        for i in range(len(probs))
-    ]
-    return response
+    logits = outputs.logits
+    predicted_id = torch.argmax(logits, dim=-1).item()
+    predicted_label = id2label[predicted_id]
 
+    # Return prediction
+    return predicted_label
 
 if __name__ == "__main__":
     import uvicorn
