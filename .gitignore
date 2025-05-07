@@ -19,15 +19,6 @@ env/
 .dvc/cache/
 .dvc/tmp/
 
-# ─── Data & model outputs ──────────────────────────────────────────────────
-data/
-metadata/
-models/
-
-# ─── MLflow ────────────────────────────────────────────────────────────────
-mlruns/
-app/data/mlruns/
-
 # ─── Prefect ───────────────────────────────────────────────────────────────
 .prefect/
 
@@ -47,6 +38,7 @@ mlflow.db
 .vscode/
 *.sublime-project
 *.sublime-workspace
+.devcontainer/
 
 # ─── Docker / Compose overrides ─────────────────────────────────────────────
 docker-compose.override.yml

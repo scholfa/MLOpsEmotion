@@ -57,4 +57,7 @@ def dvc_pipeline():
     dvc_push()
 
 if __name__ == "__main__":
-    dvc_pipeline()
+    dvc_pipeline.serve(
+        name="dvc_pipeline",
+        triggers=[]
+    )

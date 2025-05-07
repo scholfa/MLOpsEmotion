@@ -1,20 +1,6 @@
 import streamlit as st
-import os, requests
-
-PREFECT_API_URL    = os.getenv("PREFECT_API_URL", "http://localhost:4200/api")
-FLOW_NAME         = "dvc-pipeline"   # the flow name you deployed
-DEPLOYMENT_NAME   = "dvc-pipeline"   # the deployment name
-INFERENCE_API_URL = os.getenv("INFERENCE_API_URL", "http://inference:8000/infer")
-
-@st.cache_data(ttl=600)
-def get_deployment_id(flow: str, depl: str) -> str | None:
-    """Call Prefect’s `read-deployment-by-name` endpoint to fetch the UUID."""
-    url = f"{PREFECT_API_URL}/deployments/name/{flow}/{depl}"
-    resp = requests.get(url)
-    if resp.status_code == 200:
-        return resp.json().get("id")
-    st.error(f"Could not find deployment via {url}: {resp.status_code} {resp.text}")
-    return None
+import os
+import subprocess
 
 # UI setup
 st.set_page_config(page_title="Emotion Recognition Upload", layout="centered")
@@ -34,20 +20,11 @@ st.success(f"✅ Saved: {uploaded_file.name}")
 
 # 1) Trigger Prefect flow run
 if st.button("🚀 Run Emotion Pipeline"):
-    dep_id = get_deployment_id(FLOW_NAME, DEPLOYMENT_NAME)
-    if dep_id:
-        trigger_url = f"{PREFECT_API_URL}/deployments/{dep_id}/create_flow_run"
-        res = requests.post(trigger_url, json={})
-        if res.status_code == 201:
-            st.success("✅ Pipeline triggered!")
-        else:
-            st.error(f"❌ Trigger failed: {res.status_code} {res.text}")
-
-# 2) Instant inference
-if st.button("🔍 Run Instant Inference"):
-    with open(save_path, "rb") as f:
-        res = requests.post(INFERENCE_API_URL, files={"file": f})
-    if res.ok:
-        st.write("Inference result:", res.json())
+    # Trigger the flow run
+    run = subprocess.run("prefect deployment run 'dvc_pipeline/dvc_pipeline'",shell=True ,check=True)
+    if run.returncode == 0:
+        st.success("✅ Pipeline run triggered successfully!")
     else:
-        st.error(f"❌ Inference failed: {res.status_code} {res.text}")
+        st.error("❌ Failed to trigger pipeline run.")
+        st.error(f"Error code: {run.returncode}")
+        st.error(f"Error message: {run.stderr.decode()}")

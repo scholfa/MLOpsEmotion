@@ -38,24 +38,26 @@ done
 echo "✅ Prefect server is healthy!"
 
 echo "🔧 Configuring Prefect server..."
+
 POOL_NAME="default-pool"
-QUEUE_NAME="default-pool"
 
-# 1) Create the pool
-echo "🔨 Creating Prefect work-pool '$POOL_NAME' (process)…"
-prefect work-pool create "$POOL_NAME" --type process
+echo "🔨 Creating Prefect work-pool '$POOL_NAME'..."
+prefect work-pool create --type process "$POOL_NAME" &
+sleep 5
 
-# 2) Create the queue
-echo "🔨 Creating Prefect work-queue '$QUEUE_NAME' in pool '$POOL_NAME'…"
-prefect work-queue create "$QUEUE_NAME" --pool "$POOL_NAME"
+echo "✅ Check work-pool '$POOL_NAME'..."
+prefect work-pool ls
+sleep 5
 
-export PREFECT_API_URL="http://localhost:4200/api"
-echo "🚀 Starting Prefect worker on queue '$QUEUE_NAME'…"
-prefect worker start --work-queue "$QUEUE_NAME" &
-
-# give the worker a moment to spin up
-sleep 2
+echo "🔨 Creating Prefect worker …"
+prefect worker start --pool "$POOL_NAME" &
+sleep 5
 echo "✅ Prefect worker launched!"
+
+echo "🔨 Deploying Prefect flow..."
+python flows/dvc_pipeline.py &
+
+echo "✅ Prefect flow deployed!"
 
 echo "🚀 Launching Streamlit UI..."
 exec streamlit run app/streamlit_app.py \
