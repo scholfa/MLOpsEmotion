@@ -33,7 +33,7 @@ services:
       - app-data:/app/data
     command:
       - uvicorn
-      - scripts.inference_api:app
+      - inference_api:app
       - --reload
       - --host
       - "0.0.0.0"
