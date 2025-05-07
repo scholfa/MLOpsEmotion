@@ -18,19 +18,21 @@ def preprocess_audio(
         file_count += 1
         in_path = os.path.join(input_dir, fname)
 
+        # Load and resample
         y, sr = librosa.load(in_path, sr=sampling_rate)
 
+        # Trim or pad to max_duration
         max_len = int(sampling_rate * max_duration)
         if len(y) > max_len:
             y = y[:max_len]
         else:
             y = np.pad(y, (0, max_len - len(y)))
 
-        # Peak‐normalize to [-1.0, 1.0]
+        # Peak-normalize to [-1.0, 1.0]
         peak = np.max(np.abs(y)) or 1.0
         y = y / peak
 
-        # Write out
+        # Write processed file
         out_path = os.path.join(output_dir, fname)
         os.makedirs(os.path.dirname(out_path), exist_ok=True)
         sf.write(out_path, y, sampling_rate)

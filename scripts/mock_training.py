@@ -1,4 +1,6 @@
-import os, shutil
-print("🔄 Mock training: redeploy same model")
-os.makedirs("models", exist_ok=True)
-shutil.copyfile("models/emotion_model.pkl", "models/emotion_model.pkl")
+def mock_training():
+    do="nothing yet"
+    return do
+
+if __name__=="__main__":
+    mock_training()
