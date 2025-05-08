@@ -20,7 +20,7 @@ print(json.load(open("$KEY"))["client_email"])
 PYCODE
 )
 
-dvc remote remove mygdrive   2>/dev/null || true
+dvc remote remove mygdrive   2>/dev/null || true  
 dvc remote add -d mygdrive gdrive://$GDRIVE_FOLDER_ID
 
 # Configure service-account usage

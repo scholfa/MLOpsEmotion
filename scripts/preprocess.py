@@ -43,6 +43,7 @@ def preprocess_audio():
     OUT_DIR="data/processed"
     LOG_DIR="data/metadata"
     AUDIO_NAME="audio_metadata.json"
+    SAMPLE_RATE = 16000
 
     os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -55,7 +56,7 @@ def preprocess_audio():
 
     # Load and resample
     in_path = os.path.join(IN_DIR, fname)
-    y, sr = librosa.load(in_path, sr=sampling_rate)
+    y, sr = librosa.load(in_path, sr=SAMPLE_RATE)
 
     # Trim or pad to max_duration
     max_len = int(sampling_rate * max_duration)

@@ -7,7 +7,8 @@ from transformers import AutoModelForAudioClassification, AutoFeatureExtractor
 
 app = FastAPI(title="Emotion Recognition API")
 
-HF_MODEL = os.getenv("HF_MODEL_NAME", "superb/wav2vec2-base-superb-ks")
+# environment var could be changed for a updated model
+HF_MODEL = os.getenv("HF_MODEL_NAME", "firdhokk/speech-emotion-recognition-with-openai-whisper-large-v3")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load models

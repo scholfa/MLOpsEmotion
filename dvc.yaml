@@ -17,7 +17,7 @@ stages:
     metrics: [data/metadata/eval_metrics.json]
 
   retrain:
-    cmd: python scripts/retrain.py
+    cmd: python scripts/mock_train.py
     deps: [data/metadata/eval_metrics.json, scripts/mock_training.py]
     outs: [data/models/emotion_model.pkl]
     metrics: [data/metadata/retrain_stats.json]
