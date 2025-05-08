@@ -15,6 +15,13 @@ if not uploaded_file:
 # Save the file locally
 save_dir = os.path.join("data", "raw")
 os.makedirs(save_dir, exist_ok=True)
+
+# create a filename with the current timestamp
+timestamp = time.strftime("%Y%m%d-%H%M%S")
+filename = f"{timestamp}_{uploaded_file.name}"
+uploaded_file.name = filename
+
+# Save the uploaded file
 save_path = os.path.join(save_dir, uploaded_file.name)
 with open(save_path, "wb") as f:
     f.write(uploaded_file.getbuffer())
