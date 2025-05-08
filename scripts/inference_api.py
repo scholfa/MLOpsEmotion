@@ -7,11 +7,33 @@ from transformers import AutoModelForAudioClassification, AutoFeatureExtractor
 
 app = FastAPI(title="Emotion Recognition API")
 
-
-# environment var could be changed for a updated model,... same goes for the sample rate (whisper whants 16kHz and 30s)
+# environment var could be changed for a updated model... default using the same in the testnotebook...
 HF_MODEL = os.getenv("HF_MODEL_NAME", "firdhokk/speech-emotion-recognition-with-openai-whisper-large-v3")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+MODEL_DIR="data/models"
+MODEL_NAME="emotion_model"
 SAMPLE_RATE = 16000
+
+# try to load local model
+if not os.path.exists(MODEL_DIR):
+    print(f"Model directory {MODEL_DIR} not found. Creating...")
+    os.makedirs(MODEL_DIR, exist_ok=True)
+    print(f"Model directory {MODEL_DIR} created.") 
+else:
+    print(f"Model directory {MODEL_DIR} already exists.")
+
+# Check if the model is already downloaded
+if not os.path.exists(os.path.join(MODEL_DIR, MODEL_NAME)):
+    print(f"Model {MODEL_NAME} not found in {MODEL_DIR}. Downloading...")
+    # Download the model
+    AutoModelForAudioClassification.from_pretrained(HF_MODEL).save_pretrained(MODEL_DIR)
+    print(f"Model {MODEL_NAME} downloaded and saved to {MODEL_DIR}.")
+else:
+    print(f"Model {MODEL_NAME} already exists in {MODEL_DIR}. Loading...")
+    # Load the model
+    AutoModelForAudioClassification.from_pretrained(MODEL_DIR).save_pretrained(MODEL_DIR)
+    print(f"Model {MODEL_NAME} loaded from {MODEL_DIR}.")
+
 
 # Load models
 feature_extractor = AutoFeatureExtractor.from_pretrained(HF_MODEL)

@@ -4,7 +4,7 @@ import mlflow
 
 def evaluate_model():
     MODEL_DIR="data/models",
-    MODEL_NAME="emotion_model.pkl",
+    MODEL_NAME="emotion_model",
     LOG_DIR="data/metadata",
     LOG_NAME="eval_metrics.json",
     

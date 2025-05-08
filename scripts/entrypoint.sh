@@ -4,6 +4,13 @@ set -e
 echo "🔧 Configuring DVC GDrive..."
 /usr/local/bin/configure_dvc_gdrive.sh
 
+echo "📥 Pulling ML model artifacts via DVC..."
+cd /app
+# pull the model artifacts from GDrive
+dvc pull -r gdrive data/models/emotion_model || {
+  echo "⚠️ No remote artifacts found (or pull failed), continuing anyway…"
+}
+
 echo "🧪 Ensuring MLflow storage dirs exist"
 mkdir -p /app/data/mlruns
 touch    /app/data/mlruns.db
