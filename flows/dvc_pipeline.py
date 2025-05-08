@@ -36,6 +36,7 @@ def dvc_pipeline():
     dvc_add_raw()
     dvc_preprocess()
     dvc_inference()
+    dvc_evaluate()
     if should_retrain():
         mock_train()
     else:
