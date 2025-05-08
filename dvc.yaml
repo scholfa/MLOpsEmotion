@@ -11,7 +11,7 @@ stages:
     metrics: [data/metadata/inference_stats.json]
 
   evaluate:
-    cmd: python scripts/evaluate.py
+    cmd: python scripts/evaluate_model.py
     deps: [data/metadata/inference_stats.json, scripts/evaluate_model.py]
     metrics: [data/metadata/eval_metrics.json]
 
