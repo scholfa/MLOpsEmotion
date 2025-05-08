@@ -7,6 +7,9 @@ from transformers import AutoModelForAudioClassification, AutoFeatureExtractor
 
 app = FastAPI(title="Emotion Recognition API")
 
+
+SAMPLE_RATE = 16000
+
 # environment var could be changed for a updated model
 HF_MODEL = os.getenv("HF_MODEL_NAME", "firdhokk/speech-emotion-recognition-with-openai-whisper-large-v3")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -35,7 +38,7 @@ async def infer(file: UploadFile = File(...)):
     # Extract features into tensors
     inputs = feature_extractor(
         waveform,
-        sampling_rate=sr,
+        sampling_rate=SAMPLE_RATE,
         return_tensors="pt",
         padding=True,
         truncation=True,
