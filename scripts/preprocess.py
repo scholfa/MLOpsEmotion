@@ -5,43 +5,44 @@ import numpy as np
 import soundfile as sf
 
 def extract_metadata():
-
     RAW_DIR = "data/raw"
-    LOG_DIR="data/metadata"
-    LOG_NAME="audio_metadata.json"
+    LOG_DIR = "data/metadata"
+    LOG_NAME = "audio_metadata.json"
 
-    # open existing metadata file and read the fname its the only entry by now
-    metadata = []
     out_file = os.path.join(LOG_DIR, LOG_NAME)
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
+
+    # Load existing metadata
     if os.path.exists(out_file):
         with open(out_file, "r") as f:
             metadata = json.load(f)
-    # Get the first file name from the metadata
-    if metadata:
-        fname = metadata[0]["file"]
     else:
         raise ValueError("No metadata found. Please run the script with a valid audio file.")
 
+    # Expect metadata to be a dict with 'fname'
+    if isinstance(metadata, dict) and "fname" in metadata:
+        fname = metadata["fname"]
+    else:
+        raise ValueError("Invalid metadata format. Expected a dict with 'fname'.")
+
     path = os.path.join(RAW_DIR, fname)
 
-    # Get duration (seconds) with librosa
+    # Get duration
     duration = librosa.get_duration(filename=path)
 
-    # Get sample rate & channels with soundfile
+    # Get sample rate and channels
     info = sf.info(path)
-    metadata.append({
-        "duration_sec": duration,
-        "sample_rate": info.samplerate,
-        "channels": info.channels
-    })
 
-    # write extended metadata to file
+    # Add extra metadata
+    metadata["duration_sec"] = duration
+    metadata["sample_rate"] = info.samplerate
+    metadata["channels"] = info.channels
+
+    # Save updated metadata
     with open(out_file, "w") as f:
         json.dump(metadata, f, indent=2)
 
-    print(f"✅ Wrote metadata for {len(metadata)} files to {out_file}")
-
+    print(f"✅ Wrote metadata for file: {fname}")
 
 def preprocess_audio():
 
