@@ -4,6 +4,10 @@ import subprocess
 import json
 import time
 
+LOG_DIR="data/metadata"
+LOG_NAME="audio_metadata.json"
+
+
 # UI setup
 st.set_page_config(page_title="Emotion Recognition Upload", layout="centered")
 st.title("🎤 Upload Audio for Emotion Recognition")
@@ -26,6 +30,16 @@ save_path = os.path.join(save_dir, uploaded_file.name)
 with open(save_path, "wb") as f:
     f.write(uploaded_file.getbuffer())
 st.success(f"✅ Saved: {uploaded_file.name}")
+
+# overwrite the metadata file with the new filename
+metadata = []
+os.makedirs(LOG_DIR, exist_ok=True)
+file_path = os.path.join(LOG_DIR, LOG_NAME)
+metadata = {
+    "fname": uploaded_file.name
+}
+with open(file_path, 'w') as f:
+    json.dump(metadata, f, indent=2)
 
 # Trigger Prefect pipeline
 if st.button("🚀 Run Emotion Pipeline"):

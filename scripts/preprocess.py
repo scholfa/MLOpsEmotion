@@ -10,27 +10,33 @@ def extract_metadata():
     LOG_DIR="data/metadata"
     LOG_NAME="audio_metadata.json"
 
-    out_file = os.path.join(LOG_DIR, LOG_NAME)
-
-    os.makedirs(os.path.dirname(out_file), exist_ok=True)
+    # open existing metadata file and read the fname its the only entry by now
     metadata = []
-    for fname in sorted(os.listdir(RAW_DIR)):
-        if not fname.lower().endswith(".wav"):
-            continue
-        path = os.path.join(RAW_DIR, fname)
+    out_file = os.path.join(LOG_DIR, LOG_NAME)
+    os.makedirs(os.path.dirname(out_file), exist_ok=True)
+    if os.path.exists(out_file):
+        with open(out_file, "r") as f:
+            metadata = json.load(f)
+    # Get the first file name from the metadata
+    if metadata:
+        fname = metadata[0]["file"]
+    else:
+        raise ValueError("No metadata found. Please run the script with a valid audio file.")
 
-        # Get duration (seconds) with librosa
-        duration = librosa.get_duration(filename=path)
+    path = os.path.join(RAW_DIR, fname)
 
-        # Get sample rate & channels with soundfile
-        info = sf.info(path)
-        metadata.append({
-            "file": fname,
-            "duration_sec": duration,
-            "sample_rate": info.samplerate,
-            "channels": info.channels
-        })
+    # Get duration (seconds) with librosa
+    duration = librosa.get_duration(filename=path)
 
+    # Get sample rate & channels with soundfile
+    info = sf.info(path)
+    metadata.append({
+        "duration_sec": duration,
+        "sample_rate": info.samplerate,
+        "channels": info.channels
+    })
+
+    # write extended metadata to file
     with open(out_file, "w") as f:
         json.dump(metadata, f, indent=2)
 
