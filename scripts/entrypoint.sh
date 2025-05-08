@@ -7,7 +7,7 @@ echo "🔧 Configuring DVC GDrive..."
 echo "📥 Pulling ML model artifacts via DVC..."
 cd /app
 # pull the model artifacts from GDrive
-dvc pull -r gdrive data/models/emotion_model || {
+dvc pull -r mygdrive data/models/emotion_model || {
   echo "⚠️ No remote artifacts found (or pull failed), continuing anyway…"
 }
 
