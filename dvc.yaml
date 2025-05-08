@@ -8,7 +8,6 @@ stages:
   inference:
     cmd: python scripts/inference.py
     deps: [data/processed, scripts/inference.py]
-    outs: [data/inference_output]
     metrics: [data/metadata/inference_stats.json]
 
   evaluate:

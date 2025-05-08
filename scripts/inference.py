@@ -4,13 +4,11 @@ import json
 
 INFER_URL   = os.getenv("INFERENCE_API_URL", "http://inference:8000/infer")
 PRC_DIR     = "data/processed"
-OUT_DIR     = "data/inference_output"
 LOG_FILE    = "data/metadata/inference_stats.json"
 LOG_DIR     = "data/metadata"
 AUDIO_NAME  = "audio_metadata.json"
 
 def run_inference():
-    os.makedirs(OUT_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
     run=[]
@@ -31,9 +29,6 @@ def run_inference():
         return
 
     result = resp.json()
-    out_path = os.path.join(OUT_DIR, fname + ".json")
-    with open(out_path, "w") as o:
-        json.dump(result, o, indent=2)
     run.append({
         "file": fname,
         "result": result
