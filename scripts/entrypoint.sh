@@ -4,6 +4,10 @@ set -e
 echo "🔧 Configuring DVC GDrive..."
 /usr/local/bin/configure_dvc_gdrive.sh
 
+echo "🛠️  Setting up Git user config..."
+git config --global user.name "MLopsEmotionApp"
+git config --global user.email "emotion-fake-email@mlops-mse.com"
+
 echo "📥 Pulling ML model artifacts via DVC..."
 cd /app
 # pull the model artifacts from GDrive

@@ -19,6 +19,11 @@ env/
 .dvc/cache/
 .dvc/tmp/
 
+# large files handled by DVC
+# ─── Data ─────────────────────────────────────────────────────────────────
+/data/models/emotion_model
+/data/processed/
+
 # ─── Prefect ───────────────────────────────────────────────────────────────
 .prefect/
 

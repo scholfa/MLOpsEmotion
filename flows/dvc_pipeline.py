@@ -29,6 +29,16 @@ def mock_train():
     subprocess.run("dvc repro -s retrain", shell=True, check=True)
 
 @task
+def commit_tag_run(tag: str = "v1.0"):
+    # Commit the metadata to Git
+    subprocess.run("git add data/metadata", shell=True, check=True)
+    subprocess.run("git commit -m 'Add/update metadata metrics' ", shell=True, check=True)
+    # subprocess.run(f"git tag {tag}", shell=True, check=True)
+    # for now only local commits, to not pollute the repo
+    #subprocess.run("git push origin main", shell=True, check=True)     
+    #subprocess.run(f"git push origin {tag}", shell=True, check=True)  
+
+@task
 def dvc_push():
     subprocess.run("dvc push", shell=True, check=True)
 
@@ -42,6 +52,7 @@ def dvc_pipeline():
         mock_train()
     else:
         print("✅ Model OK—skipping retrain")
+    commit_tag_run()
     dvc_push()
 
 if __name__ == "__main__":
