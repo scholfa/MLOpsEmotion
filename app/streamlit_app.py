@@ -40,8 +40,8 @@ if uploaded_file:
                 file_size = os.path.getsize(raw_path)
 
                 metadata = {
-                    "fname": filename,
-                    "sname": uploaded_file.name,
+                    "file": filename,
+                    "source": uploaded_file.name,
                     "size": file_size,
                 }
 

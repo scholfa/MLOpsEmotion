@@ -7,7 +7,7 @@ INFER_URL   = os.getenv("INFERENCE_API_URL", "http://inference:8000/infer")
 PRC_DIR     = "data/processed"
 LOG_FILE    = "data/metadata/inference_stats.json"
 LOG_DIR     = "data/metadata"
-META_DATA  = "metadata.json"
+META_DATA   = "metadata.json"
 
 def run_inference():
     os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
@@ -18,7 +18,7 @@ def run_inference():
     with open(os.path.join(LOG_DIR, META_DATA), "r") as f:
         metadata = json.load(f)
 
-    fname = metadata[0]["file"]
+    fname = metadata["file"]
 
     path = os.path.join(PRC_DIR, fname)
     with open(path, "rb") as f:

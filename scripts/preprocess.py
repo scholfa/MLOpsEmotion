@@ -17,7 +17,7 @@ def extract_metadata():
     with open(os.path.join(LOG_DIR, META_DATA), "r") as f:
         metadata = json.load(f)
 
-    fname = metadata["fname"]
+    fname = metadata["file"]
 
     # Get audio metadata
     path = os.path.join(RAW_DIR, fname)
@@ -27,7 +27,7 @@ def extract_metadata():
     info = sf.info(path)
 
     audio_metadata = {
-        "fname": fname,
+        "file": fname,
         "duration_sec": duration,
         "sample_rate": info.samplerate,
         "channels": info.channels,
@@ -59,7 +59,7 @@ def preprocess_audio():
         metadata = json.load(f)    
 
     sampling_rate = metadata["sample_rate"]
-    fname = metadata["fname"]
+    fname = metadata["file"]
 
     # Load and resample
     in_path = os.path.join(IN_DIR, fname)
