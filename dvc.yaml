@@ -1,0 +1,22 @@
+stages:
+  preprocess:
+    cmd: python scripts/preprocess.py
+    deps: [data/raw, scripts/preprocess.py, data/metadata/metadata.json]
+    outs: [data/processed]
+    metrics: [data/metadata/audio_metadata.json]
+
+  inference:
+    cmd: python scripts/inference.py
+    deps: [data/processed, scripts/inference.py]
+    metrics: [data/metadata/inference_stats.json]
+
+  evaluate:
+    cmd: python scripts/evaluate_model.py
+    deps: [data/metadata/inference_stats.json, scripts/evaluate_model.py]
+    metrics: [data/metadata/eval_metrics.json]
+
+  retrain:
+    cmd: python scripts/mock_training.py
+    deps: [data/metadata/eval_metrics.json, scripts/mock_training.py]
+    outs: [data/models/emotion_model]
+    metrics: [data/metadata/retrain_stats.json]
