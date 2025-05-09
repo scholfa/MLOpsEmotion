@@ -8,41 +8,40 @@ def extract_metadata():
     RAW_DIR = "data/raw"
     LOG_DIR = "data/metadata"
     LOG_NAME = "audio_metadata.json"
+    META_DATA  = "metadata.json"
 
     out_file = os.path.join(LOG_DIR, LOG_NAME)
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
 
-    # Load existing metadata
-    if os.path.exists(out_file):
-        with open(out_file, "r") as f:
-            metadata = json.load(f)
-    else:
-        raise ValueError("No metadata found. Please run the script with a valid audio file.")
+    # Load metadata
+    with open(os.path.join(LOG_DIR, META_DATA), "r") as f:
+        metadata = json.load(f)
 
-    # Expect metadata to be a dict with 'fname'
-    if isinstance(metadata, dict) and "fname" in metadata:
-        fname = metadata["fname"]
-    else:
-        raise ValueError("Invalid metadata format. Expected a dict with 'fname'.")
+    fname = metadata["fname"]
 
+    # Get audio metadata
     path = os.path.join(RAW_DIR, fname)
-
     # Get duration
     duration = librosa.get_duration(filename=path)
-
     # Get sample rate and channels
     info = sf.info(path)
 
-    # Add extra metadata
-    metadata["duration_sec"] = duration
-    metadata["sample_rate"] = info.samplerate
-    metadata["channels"] = info.channels
+    audio_metadata = {
+        "fname": fname,
+        "duration_sec": duration,
+        "sample_rate": info.samplerate,
+        "channels": info.channels,
+        "size": info.frames,
+        "format": info.format,
+        }
 
-    # Save updated metadata
-    with open(out_file, "w") as f:
-        json.dump(metadata, f, indent=2)
+    # Save metadata
+    os.makedirs(LOG_DIR, exist_ok=True)
+    meta_path = os.path.join(LOG_DIR, LOG_NAME)
+    with open(meta_path, "w") as f:
+        json.dump(audio_metadata, f, indent=2)
 
-    print(f"✅ Wrote metadata for file: {fname}")
+    print(f"✅ Extracted audio metadata")
 
 def preprocess_audio():
 
@@ -58,8 +57,9 @@ def preprocess_audio():
     # Load metadata
     with open(os.path.join(LOG_DIR, AUDIO_NAME), "r") as f:
         metadata = json.load(f)    
-    sampling_rate = metadata[0]["sample_rate"]
-    fname = metadata[0]["file"]
+
+    sampling_rate = metadata["sample_rate"]
+    fname = metadata["fname"]
 
     # Load and resample
     in_path = os.path.join(IN_DIR, fname)
