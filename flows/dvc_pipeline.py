@@ -4,6 +4,7 @@ import subprocess
 @task
 def dvc_add_raw():
     subprocess.run("dvc add data/raw/", shell=True, check=True)
+    subprocess.run("dvc add data/metadata/metadata.json", shell=True, check=True)
 
 @task
 def dvc_preprocess():
