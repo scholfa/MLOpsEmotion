@@ -90,9 +90,23 @@ if uploaded_file:
         if not matched:
             st.error("❌ No matching result found within timeout.")
         else:
+            # extract the result
+            emotion_lable = matched.get("result", {}).get("label", "")
+            # convert to icon
+            result_em_conv = {
+                "angry": "😡",
+                "disgust": "🤢",
+                "fearful": "😨",
+                "happy": "😊",
+                "neutral": "😐",
+                "sad": "😢",
+                "surprised": "😲"
+            }
+            # convert to emoji
+            result_emoji = result_em_conv.get(emotion_lable, "❓")
+
             st.success("🎉 Inference complete!")
-            st.subheader("📊 Emotion Prediction Result:")
-            st.json(matched["result"])
+            st.subheader("📊 Emotion Prediction Result: {result_emoji} {emotion_lable}")
             st.balloons()
 else:
     st.stop()
