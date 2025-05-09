@@ -44,19 +44,20 @@ until curl --silent --fail http://localhost:4200/health; do
 done
 echo "✅ Prefect server is healthy!"
 
-echo "🔧 Configuring Prefect server..."
-
 POOL_NAME="default-pool"
 
 echo "🔨 Creating Prefect work-pool '$POOL_NAME'..."
-prefect work-pool create --type process "$POOL_NAME" &
-sleep 5
+prefect work-pool create --type process "$POOL_NAME"
+echo "✅ Work-pool '$POOL_NAME' created."
 
-echo "✅ Check work-pool '$POOL_NAME'..."
-prefect work-pool ls
-sleep 5
+echo "🔍 Verifying work-pool exists..."
+until prefect work-pool inspect "$POOL_NAME" >/dev/null 2>&1; do
+  echo "⏳ Waiting for work pool '$POOL_NAME' to be ready..."
+  sleep 2
+done
+echo "✅ Work pool '$POOL_NAME' is ready!"
 
-echo "🔨 Creating Prefect worker …"
+echo "🔨 Starting Prefect worker..."
 prefect worker start --pool "$POOL_NAME" &
 sleep 5
 echo "✅ Prefect worker launched!"
@@ -65,6 +66,7 @@ echo "🔨 Deploying Prefect flow..."
 python flows/dvc_pipeline.py &
 
 echo "✅ Prefect flow deployed!"
+
 
 echo "🚀 Launching Streamlit UI..."
 exec streamlit run app/streamlit_app.py \
