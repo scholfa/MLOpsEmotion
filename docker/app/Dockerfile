@@ -18,23 +18,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN useradd -ms /bin/bash vscode
 
 # Install Python dependencies for the app
-COPY requirements-app.txt .
+COPY docker/app/requirements.txt .
 RUN pip install --upgrade pip \
- && pip install --no-cache-dir -r requirements-app.txt
+ && pip install --no-cache-dir -r requirements.txt
 
 # Copy in all application code, scripts, flows, etc.
 COPY . .
 
 # Copy and register config dvc script
-COPY /scripts/configure_dvc_gdrive.sh /usr/local/bin/configure_dvc_gdrive.sh
+COPY ../../scripts/configure_dvc_gdrive.sh /usr/local/bin/configure_dvc_gdrive.sh
 RUN chmod +x /usr/local/bin/configure_dvc_gdrive.sh
 
 # Install and register your entrypoint script
-COPY /scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY ../../scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Invoke entrypoint on container start
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Expose ports for Streamlit, MLflow, and Prefect
-EXPOSE 8501 5000 4200
+EXPOSE 8501 4200

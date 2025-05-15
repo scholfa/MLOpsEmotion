@@ -1,10 +1,12 @@
 import io
 import os
+
 import soundfile as sf
 import torch
+import uvicorn
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from transformers import AutoModelForAudioClassification, AutoFeatureExtractor
-
+import requests
 app = FastAPI(title="Emotion Recognition API")
 
 # environment var could be changed for a updated model... default using the same in the testnotebook...
@@ -44,6 +46,7 @@ id2label = model.config.id2label
 def health_check():
     return {"status": "ok"}
 
+
 @app.post("/infer")
 async def infer(file: UploadFile = File(...)):
     if file.content_type not in ("audio/wav", "audio/x-wav"):
@@ -77,6 +80,38 @@ async def infer(file: UploadFile = File(...)):
 
     return {"label": predicted_label}
 
+
+# MLflow REST API endpoint for predictions
+# MLFLOW_SERVER_URL = "http://localhost:5001/invocations"
+
+
+# @app.post("/infer")
+# async def infer(file: UploadFile = File(...)):
+#     if file.content_type not in ("audio/wav", "audio/x-wav"):
+#         raise HTTPException(status_code=415, detail="Please upload WAV files only.")
+#
+#     # Read raw bytes and decode to waveform
+#     audio_bytes = await file.read()
+#     try:
+#         waveform, sr = sf.read(io.BytesIO(audio_bytes), dtype='float32')
+#     except Exception:
+#         raise HTTPException(status_code=400, detail="Unable to decode WAV file.")
+#
+#     # Prepare the data to be sent to the MLflow model server
+#     data = {
+#         "columns": ["waveform"],
+#         "data": [waveform.tolist()]
+#     }
+#
+#     # Send the prediction request to MLflow
+#     response = requests.post(MLFLOW_SERVER_URL, json=data)
+#
+#     if response.status_code != 200:
+#         raise HTTPException(status_code=500, detail="Error from MLflow model inference.")
+#
+#     prediction = response.json()
+#     return {"prediction": prediction}
+
+
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("INFERENCE_PORT", 8000)))

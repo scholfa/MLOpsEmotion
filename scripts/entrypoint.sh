@@ -15,29 +15,29 @@ dvc pull -r mygdrive data/models/emotion_model || {
   echo "⚠️ No remote artifacts found (or pull failed), continuing anyway…"
 }
 
-echo "🧪 Ensuring MLflow storage dirs exist"
-mkdir -p /app/data/mlruns
-touch    /app/data/mlruns.db
-chmod -R a+rw /app/data
-
-echo "⏳ Waiting for inference API at http://inference:8000/health ...(takes a while)"
-until curl --silent --fail http://inference:8000/health; do
-  sleep 1
-done
-echo "✅ Inference API is ready!"
-
-echo "🚀 Starting MLflow server..."
-mlflow server \
-  --backend-store-uri sqlite:////app/data/mlruns.db \
-  --default-artifact-root /app/data/mlruns \
-  --host 0.0.0.0 \
-  --port 5000 &
-
-echo "⏳ Waiting for MLflow at http://localhost:5000 ..."
-until curl --silent --fail http://localhost:5000; do
-  sleep 1
-done
-echo "✅ MLflow is up!"
+#echo "🧪 Ensuring MLflow storage dirs exist"
+#mkdir -p /app/data/mlruns
+#touch    /app/data/mlruns.db
+#chmod -R a+rw /app/data
+#
+#echo "⏳ Waiting for inference API at http://inference:8000/health ...(takes a while)"
+#until curl --silent --fail http://inference:8000/health; do
+#  sleep 1
+#done
+#echo "✅ Inference API is ready!"
+#
+#echo "🚀 Starting MLflow server..."
+#mlflow server \
+#  --backend-store-uri sqlite:////app/data/mlruns.db \
+#  --default-artifact-root /app/data/mlruns \
+#  --host 0.0.0.0 \
+#  --port 5000 &
+#
+#echo "⏳ Waiting for MLflow at http://localhost:5000 ..."
+#until curl --silent --fail http://localhost:5000; do
+#  sleep 1
+#done
+#echo "✅ MLflow is up!"
 
 echo "🚀 Starting Prefect server..."
 prefect server start --host 0.0.0.0 --port 4200 &

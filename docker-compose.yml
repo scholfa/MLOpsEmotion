@@ -1,11 +1,11 @@
 version: "3.9"
 services:
 
-  # ─── App: Streamlit + MLflow + Prefect + DVC ───
+# ─── App: Streamlit + Prefect + DVC ───
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/app/Dockerfile
     image: mlopsemotion-app
     env_file:
       - .env
@@ -15,14 +15,31 @@ services:
       - ${HOME}/.secrets/gdrive-sa.json:/app/secret/gdrive-sa.json:ro,z
     ports:
       - "8501:8501"  # Streamlit
-      - "5000:5000"  # MLflow
       - "4200:4200"  # Prefect UI/API
+#    environment:
+  #      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+  # ─── MLflow Server ───
+#  mlflow:
+#    build:
+#      context: .
+#      dockerfile: docker/mlflow/Dockerfile
+#    image: mlopsemotion-mlflow
+#    ports:
+#      - "5000:5000"
+#      - "5001:5001"
+#    environment:
+#      - MLFLOW_TRACKING_URI=http://mlflow:5000
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 15g
 
   # ─── Inference: PyTorch + FastAPI ───
   inference:
     build:
       context: .
-      dockerfile: Dockerfile.inference
+      dockerfile: docker/inference/Dockerfile
     image: mlopsemotion-inference
     env_file:
       - .env
@@ -31,14 +48,42 @@ services:
       - "8000:8000"
     volumes:
       - app-data:/app/data
-    command:
-      - uvicorn
-      - inference_api:app
-      - --reload
-      - --host
-      - "0.0.0.0"
-      - --port
-      - "8000"
+    command: [ "uvicorn" , "inference_api:app", "--reload", "--host", "0.0.0.0", "--port", "8000" ]
+
+  # ─── Prefect ───
+  #  prefect:
+  #    build:
+  #      context: .
+  #      dockerfile: docker/prefect/Dockerfile
+  #    image: mlopsemotion-prefect
+  #    env_file:
+  #      - .env
+  #    ports:
+  #      - "4200:4200"  # Prefect UI/API
+  #    volumes:
+  #      - app-data:/app/data
+  #      - ${HOME}/.secrets/gdrive-sa.json:/app/secret/gdrive-sa.json:ro,z
+  #    networks:
+  #      - app-net
+  #
+  ##  # ─── Streamlit Server ───
+  #  streamlit:
+  #    build:
+  #      context: .
+  #      dockerfile: docker/streamlit/Dockerfile
+  #    env_file:
+  #      - .env
+  #    depends_on:
+  #      - prefect
+  #    image: mlopsemotion-streamlit
+  #    ports:
+  #      - "8501:8501"
+  #    networks:
+  #      - app-net
 
 volumes:
   app-data:
+
+#networks:
+#  app-net:
+#    driver: bridge
