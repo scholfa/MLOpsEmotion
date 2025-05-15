@@ -1,16 +1,25 @@
-import streamlit as st
+import json
 import os
 import subprocess
-import json
 import time
 import traceback
+import subprocess
+import requests
 import soundfile as sf
+import streamlit as st
+# Load environment variables
+# from dotenv import load_dotenv
 
 # Constants
 LOG_DIR = "data/metadata"
 RAW_DIR = "data/raw"
 LOG_NAME = "metadata.json"
 RESULT_FILE = "data/metadata/inference_stats.json"
+
+# Load environment variables
+# load_dotenv()
+# PREFECT_API = os.getenv("PREFECT_API_NET")
+# DEPLOYMENT_ID = os.getenv("DEPLOYMENT_ID")
 
 # UI setup
 st.set_page_config(page_title="Emotion Recognition Upload", layout="centered")
@@ -54,6 +63,16 @@ if uploaded_file:
                 # check if uploaded file is saved and metadata is written
                 if os.path.exists(raw_path) and os.path.exists(meta_path):
                     st.success("✅ File saved and metadata written! Starting inference...")
+                    # print("POST request to Prefect API")
+                    # print("ENDPOINT", f"{PREFECT_API}/deployments/name/{DEPLOYMENT_ID}/run")
+                    # response = requests.post(
+                    #     # f"{PREFECT_API}/deployments/name/{DEPLOYMENT_ID}/run",
+                    #     f"{PREFECT_API}/deployments/0f698b89-9bb7-4fa9-a501-c078b64fdec0/create_flow_run",
+                    #     timeout=10,
+                    #     body={{"state": {"type": "SCHEDULED", "message": "Run from the Prefect UI with defaults",
+                    #                      "state_details": {}}}}
+                    # )
+                    # print("ENDED", response.json())
                     subprocess.run("prefect deployment run 'dvc_pipeline/dvc_pipeline'", shell=True, check=True)
                 else:
                     st.error("❌ File or metadata not saved correctly.")

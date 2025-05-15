@@ -3,11 +3,10 @@ FROM pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
 WORKDIR /app
 
 # Copy and install only the extras
-COPY requirements-inference.txt .
-RUN pip install --no-cache-dir -r requirements-inference.txt
+COPY docker/inference/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY scripts/inference_api.py /app/
-
+COPY /scripts/inference_api.py /app/
 EXPOSE 8000
 
 CMD ["uvicorn", "inference_api:app", "--host", "0.0.0.0", "--port", "8000"]
