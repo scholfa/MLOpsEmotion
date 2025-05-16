@@ -3,10 +3,8 @@ import os
 import subprocess
 import time
 import traceback
-import subprocess
-import requests
-import soundfile as sf
 import streamlit as st
+
 # Load environment variables
 # from dotenv import load_dotenv
 
@@ -110,7 +108,8 @@ if uploaded_file:
             st.error("❌ No matching result found within timeout.")
         else:
             # extract the result
-            emotion_label = matched.get("result", {}).get("label", "")
+            emotion_label = matched.get("result", {}).get("predictions", "")
+
             # convert to icon
             result_em_conv = {
                 "angry": "😡",
@@ -122,7 +121,7 @@ if uploaded_file:
                 "surprised": "😲"
             }
             # convert to emoji
-            result_emoji = result_em_conv.get(emotion_label, "❓")
+            result_emoji = result_em_conv.get(emotion_label[0], "❓")
 
             st.success("🎉 Inference complete!")
             st.subheader(f"📊 Emotion Prediction Result: {result_emoji} {emotion_label}")

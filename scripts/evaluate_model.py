@@ -1,6 +1,5 @@
 import os
 import json
-import mlflow
 
 def evaluate_model():
     MODEL_DIR="data/models"

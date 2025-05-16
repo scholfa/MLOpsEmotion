@@ -13,13 +13,8 @@ class EmotionRecognitionModel(mlflow.pyfunc.PythonModel):
         self.id2label = self.model.config.id2label
 
     def predict(self, context, model_input):
-        """
-        model_input: expects a DataFrame with a column 'waveform' containing lists of float32 audio samples
-        """
-        waveforms = model_input["waveform"].tolist()
-
         inputs = self.feature_extractor(
-            waveforms,
+            model_input,
             sampling_rate=16000,
             return_tensors="pt",
             padding=True,
