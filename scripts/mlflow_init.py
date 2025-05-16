@@ -1,4 +1,5 @@
 import os
+import random
 
 import mlflow
 from mlflow import set_tracking_uri
@@ -6,6 +7,18 @@ from mlflow.tracking import MlflowClient
 from transformers import AutoModelForAudioClassification, AutoFeatureExtractor
 
 from mlflow_emotion_model import EmotionRecognitionModel
+
+
+def mock_mlflow_training():
+    losses = []
+    epochs = 10
+    for epoch in range(1, epochs):
+        # Simulate a fake loss decreasing over time
+        loss = round(random.uniform(0.7, 1.0) - epoch * 0.1, 4)
+        losses.append(loss)
+    print("✅ Mock training complete.")
+    return losses, epochs
+
 
 # Set the tracking URI (ensure this is where MLflow is running)
 set_tracking_uri("http://localhost:5000")
@@ -62,9 +75,17 @@ feature_extractor = AutoFeatureExtractor.from_pretrained(HF_MODEL).save_pretrain
 
 print("Model and feature extractor saved locally.")
 
-# Log custom pyfunc model
 mlflow.set_experiment(experiment_name)
+
+mlflow.autolog(log_models=True)
+
 with mlflow.start_run(run_name="register-whisper-emotion") as run:
+    print("Starting mock training loop...")
+    loss, epochs = mock_mlflow_training()
+    for l, e in zip(loss, range(1, epochs)):
+        mlflow.log_metric("loss", f"{l:2f}", step=e)
+    print("Mock training complete.")
+
     mlflow.pyfunc.log_model(
         artifact_path="emotion_model",
         python_model=EmotionRecognitionModel(),

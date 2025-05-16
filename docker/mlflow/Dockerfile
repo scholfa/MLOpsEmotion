@@ -10,6 +10,7 @@ WORKDIR /app
 COPY docker/mlflow/requirements.txt .
 COPY scripts/mlflow_init.py .
 COPY scripts/mlflow_emotion_model.py .
+COPY notebooks/data/raw data/
 COPY docker/mlflow/entrypoint.sh .
 
 # Install dependencies
