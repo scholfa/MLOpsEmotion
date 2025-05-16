@@ -1,7 +1,7 @@
 version: "3.9"
 services:
 
-# ─── App: Streamlit + Prefect + DVC ───
+  # ─── App: Streamlit + Prefect + DVC ───
   app:
     build:
       context: .
@@ -16,24 +16,28 @@ services:
     ports:
       - "8501:8501"  # Streamlit
       - "4200:4200"  # Prefect UI/API
-#    environment:
-  #      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+      - inference
+    networks:
+      - app-net
 
   # ─── MLflow Server ───
-#  mlflow:
-#    build:
-#      context: .
-#      dockerfile: docker/mlflow/Dockerfile
-#    image: mlopsemotion-mlflow
-#    ports:
-#      - "5000:5000"
-#      - "5001:5001"
-#    environment:
-#      - MLFLOW_TRACKING_URI=http://mlflow:5000
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 15g
+  mlflow:
+    build:
+      context: .
+      dockerfile: docker/mlflow/Dockerfile
+    image: mlopsemotion-mlflow
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - MLFLOW_HTTP_REQUEST_TIMEOUT=600
+    networks:
+      - app-net
 
   # ─── Inference: PyTorch + FastAPI ───
   inference:
@@ -49,6 +53,8 @@ services:
     volumes:
       - app-data:/app/data
     command: [ "uvicorn" , "inference_api:app", "--reload", "--host", "0.0.0.0", "--port", "8000" ]
+    networks:
+      - app-net
 
   # ─── Prefect ───
   #  prefect:
@@ -84,6 +90,6 @@ services:
 volumes:
   app-data:
 
-#networks:
-#  app-net:
-#    driver: bridge
+networks:
+  app-net:
+    driver: bridge
