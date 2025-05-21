@@ -4,7 +4,7 @@
 COMPOSE       := podman-compose
 PROJECT_NAME  := mlopsemotion
 
-.PHONY: all build-app build-inference build up down logs status \
+.PHONY: all build-app build-inference build-mlflow build up down logs status \
         preprocess metadata inference evaluate dvc-repro dvc-push \
         pipeline run-pipeline clean
 
@@ -19,7 +19,10 @@ build-app:
 build-inference:
 	$(COMPOSE) build inference
 
-build: build-app build-inference
+build-mlflow:
+	$(COMPOSE) build mlflow
+
+build: build-app build-inference build-mlflow
 
 # ─── Compose lifecycle ────────────────────────────────────────────────────────
 
