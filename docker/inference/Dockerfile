@@ -1,6 +1,18 @@
-FROM pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
+FROM python:3.10-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 WORKDIR /app
+
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    ffmpeg \
+    libsndfile1 \
+    build-essential \
+   && rm -rf /var/lib/apt/lists/*
 
 # Copy and install only the extras
 COPY docker/inference/requirements.txt .

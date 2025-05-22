@@ -9,7 +9,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 
 app = FastAPI(title="Emotion Recognition API")
 load_dotenv()
-MLFLOW_SERVER_URL = os.getenv("MLFLOW_SERVER_URL")
+MLFLOW_SERVER_URL = os.getenv("MLFLOW_SERVER_URL", "http://mlflow:5001/invocations")
 
 
 @app.get("/health")
@@ -69,7 +69,11 @@ async def infer(file: UploadFile = File(...)):
 
     # Send the prediction request to MLflow
     response = requests.post(MLFLOW_SERVER_URL, json=data, headers={"Content-Type": "application/json"})
-
+    
+    # Debug response
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text[:500]}...")  # Truncate long responses
+ 
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Error from MLflow model inference.")
 
