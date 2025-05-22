@@ -1,3 +1,0 @@
-dvc[gdrive]==3.59.1
-prefect==3.4.0
-

@@ -2,8 +2,6 @@ import os
 import json
 
 def mock_training():
-    OUT_DIR="data/models"
-    MODEL_NAME="emotion_model"
     LOG_DIR="data/metadata"
     LOG_NAME="retrain_stats.json"
 
