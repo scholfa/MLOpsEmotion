@@ -36,5 +36,5 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Invoke entrypoint on container start
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# Expose ports for Streamlit, MLflow, and Prefect
+# Expose ports for Streamlit and Prefect
 EXPOSE 8501 4200
