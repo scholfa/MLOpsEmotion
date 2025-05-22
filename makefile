@@ -74,6 +74,6 @@ pipeline: build up run-pipeline
 # Tear down containers, remove built images and volumes
 clean: down
 	# Remove the two built images (ignore errors if they don't exist)
-	podman image rm mlopsemotion-app mlopsemotion-inference || true
+	podman image rm mlopsemotion-app mlopsemotion-inference mlopsemotion-mlflow || true
 	# Remove the named volumes (ignore errors if they don't exist)
 	podman volume rm ${PROJECT_NAME}_app-data ${PROJECT_NAME}_app-shared || true
