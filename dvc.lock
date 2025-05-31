@@ -1,0 +1,61 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python scripts/preprocess.py
+    deps:
+    - path: data/metadata/metadata.json
+      hash: md5
+      md5: b7f7998043de4724a879b021143fbb4e
+      size: 82
+    - path: data/raw
+      hash: md5
+      md5: 0d5e032ee2ba037a5ec19b0e306bd286.dir
+      size: 23985988
+      nfiles: 20
+    - path: scripts/preprocess.py
+      hash: md5
+      md5: adf6de168fd8178260605e4e22bf0cca
+      size: 2216
+    outs:
+    - path: data/metadata/audio_metadata.json
+      hash: md5
+      md5: d78b0dcfd4c74d15778056117712e7b6
+      size: 140
+    - path: data/processed
+      hash: md5
+      md5: 12cbe462853adeaee1d4c7d1ee6ec993.dir
+      size: 2880044
+      nfiles: 1
+  inference:
+    cmd: python scripts/inference.py
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 12cbe462853adeaee1d4c7d1ee6ec993.dir
+      size: 2880044
+      nfiles: 1
+    - path: scripts/inference.py
+      hash: md5
+      md5: 0b02d5bddf117007a1effeba2be31b1b
+      size: 1106
+    outs:
+    - path: data/metadata/inference_stats.json
+      hash: md5
+      md5: 6f8d5f6da2bb34a9ad8ee6e1cbcc7d33
+      size: 118
+  evaluate:
+    cmd: python scripts/evaluate_model.py
+    deps:
+    - path: data/metadata/inference_stats.json
+      hash: md5
+      md5: 6f8d5f6da2bb34a9ad8ee6e1cbcc7d33
+      size: 118
+    - path: scripts/evaluate_model.py
+      hash: md5
+      md5: ec24e6b205358a8bab80165ed45c9d3b
+      size: 422
+    outs:
+    - path: data/metadata/eval_metrics.json
+      hash: md5
+      md5: d4f309bffc85acfc81550c471ab8c678
+      size: 34

@@ -11,6 +11,7 @@ services:
       - .env
     working_dir: /app
     volumes:
+      - .:/app 
       - app-data:/app/data
       - ${HOME}/.secrets/gdrive-sa.json:/app/secret/gdrive-sa.json:ro,z
     ports:
