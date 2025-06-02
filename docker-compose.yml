@@ -11,8 +11,8 @@ services:
       - .env
     working_dir: /app
     volumes:
-      - .:/app 
-      - app-data:/app/data
+      - .:/app:z
+      - app-data:/app/data:z
       - ${HOME}/.secrets/gdrive-sa.json:/app/secret/gdrive-sa.json:ro,z
     ports:
       - "8501:8501"  # Streamlit
