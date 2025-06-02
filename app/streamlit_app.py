@@ -8,8 +8,6 @@ from audiorecorder import audiorecorder
 import wave
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
-import matplotlib.patches as mpatches
 
 # Load environment variables
 # from dotenv import load_dotenv
@@ -19,6 +17,7 @@ LOG_DIR = "data/metadata"
 RAW_DIR = "data/raw"
 LOG_NAME = "metadata.json"
 RESULT_FILE = "data/metadata/inference_stats.json"
+STYLE_CSS = "static/css/style.css"
 
 # UI setup - Changed to wide layout
 st.set_page_config(
@@ -28,228 +27,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-st.markdown("""
-<style>
-audio {
-    height: 60px !important; /* z.B. Standard: ~32px */
-    width: 100% !important;  /* Optional: volle Breite */
-}
-</style>
-""", unsafe_allow_html=True)
+# Load CSS from external file
+def load_css(css_file):
+    with open(css_file, "r") as f:
+        return f.read()
 
-
-# Enhanced CSS for Dark Mode compatibility
-st.markdown("""
-<style>
-    :root {
-        --primary-color: #667eea;
-        --secondary-color: #764ba2;
-        --accent-color: #f56565;
-        --success-color: #48bb78;
-        --warning-color: #ed8936;
-        --error-color: #f56565;
-        
-        /* Light mode colors */
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8f9fa;
-        --bg-tertiary: #f1f3f5;
-        --text-primary: #1a202c;
-        --text-secondary: #4a5568;
-        --border-color: #e2e8f0;
-        --shadow-color: rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Dark mode colors */
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2d2d2d;
-            --bg-tertiary: #3a3a3a;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --border-color: #4a4a4a;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-        }
-    }
-    
-    /* Force dark mode for Streamlit dark theme */
-    .stApp[data-theme="dark"] {
-        --bg-primary: #0e1117;
-        --bg-secondary: #262730;
-        --bg-tertiary: #3a3a3a;
-        --text-primary: #ffffff;
-        --text-secondary: #a0a0a0;
-        --border-color: #4a4a4a;
-        --shadow-color: rgba(0, 0, 0, 0.3);
-    }
-    
-    /* Main header styling with theme support */
-    .main-header {
-        background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        padding: 2rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-        text-align: center;
-        box-shadow: 0 4px 20px var(--shadow-color);
-        border: 1px solid var(--border-color);
-    }
-    
-    /* Card styling with theme support */
-    .stMetric {
-        background-color: var(--bg-secondary) !important;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px var(--shadow-color);
-        border: 1px solid var(--border-color);
-        color: var(--text-primary) !important;
-    }
-    
-    .stMetric label {
-        color: var(--text-secondary) !important;
-    }
-    
-    /* Tab styling with theme support */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 24px;
-        background-color: var(--bg-tertiary);
-        padding: 0.5rem;
-        border-radius: 10px;
-        border: 1px solid var(--border-color);
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        height: 50px;
-        padding-left: 20px;
-        padding-right: 20px;
-        background-color: var(--bg-primary);
-        border-radius: 8px;
-        border: 2px solid var(--border-color);
-        color: var(--text-primary);
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background-color: var(--primary-color) !important;
-        color: white !important;
-        border-color: var(--primary-color) !important;
-    }
-    
-    /* Button styling with theme support */
-    .stButton > button {
-        background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
-        color: white !important;
-        border: none !important;
-        padding: 0.5rem 2rem;
-        font-weight: 600;
-        border-radius: 8px;
-        transition: all 0.3s;
-        box-shadow: 0 2px 8px var(--shadow-color);
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
-    }
-    
-    /* Info/Success/Error message styling with theme support */
-    .stAlert {
-        border-radius: 8px;
-        border: none;
-        box-shadow: 0 2px 8px var(--shadow-color);
-    }
-    
-    .stSuccess {
-        background-color: rgba(72, 187, 120, 0.1) !important;
-        border-left: 4px solid var(--success-color) !important;
-        color: var(--text-primary) !important;
-    }
-    
-    .stError {
-        background-color: rgba(245, 101, 101, 0.1) !important;
-        border-left: 4px solid var(--error-color) !important;
-        color: var(--text-primary) !important;
-    }
-    
-    .stInfo {
-        background-color: rgba(102, 126, 234, 0.1) !important;
-        border-left: 4px solid var(--primary-color) !important;
-        color: var(--text-primary) !important;
-    }
-    
-    /* File uploader styling */
-    .stFileUploader > div {
-        background-color: var(--bg-secondary);
-        border: 2px dashed var(--border-color);
-        border-radius: 8px;
-        padding: 2rem;
-    }
-    
-    .stFileUploader:hover > div {
-        border-color: var(--primary-color);
-        background-color: rgba(102, 126, 234, 0.05);
-    }
-    
-    /* Audio recorder styling */
-    .stAudio {
-        background-color: var(--bg-secondary);
-        border-radius: 8px;
-        padding: 1rem;
-        border: 1px solid var(--border-color);
-    }
-    
-    /* Expander styling */
-    .streamlit-expanderHeader {
-        background-color: var(--bg-secondary) !important;
-        color: var(--text-primary) !important;
-        border-radius: 8px !important;
-        border: 1px solid var(--border-color) !important;
-    }
-    
-    .streamlit-expanderContent {
-        background-color: var(--bg-secondary) !important;
-        border: 1px solid var(--border-color) !important;
-        border-top: none !important;
-    }
-    
-    /* Markdown styling for dark mode */
-    .stMarkdown {
-        color: var(--text-primary);
-    }
-    
-    /* Grid styling for emotion cards */
-    .emotion-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin: 2rem 0;
-    }
-    
-    .emotion-card {
-        background: var(--bg-secondary);
-        padding: 1rem;
-        border-radius: 8px;
-        text-align: center;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 2px 8px var(--shadow-color);
-        transition: all 0.3s ease;
-    }
-    
-    .emotion-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px var(--shadow-color);
-    }
-    
-    /* Footer styling */
-    .footer {
-        text-align: center;
-        color: var(--text-secondary);
-        padding: 1rem;
-        background-color: var(--bg-secondary);
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        margin-top: 2rem;
-    }
-</style>
-""", unsafe_allow_html=True)
+# Load and apply CSS 
+css_path = os.path.join(os.path.dirname(__file__), STYLE_CSS)
+st.markdown(f"<style>{load_css(css_path)}</style>", unsafe_allow_html=True)
 
 # Header with gradient background
 st.markdown("""
