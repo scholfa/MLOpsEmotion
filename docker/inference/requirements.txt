@@ -3,4 +3,4 @@ fastapi==0.111.0
 uvicorn==0.22.0
 requests==2.31.0
 numpy==2.2.0
-dotenv
+dotenv==0.9.9
