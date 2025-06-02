@@ -28,79 +28,225 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for better styling
 st.markdown("""
 <style>
-    /* Main header styling */
+audio {
+    height: 60px !important; /* z.B. Standard: ~32px */
+    width: 100% !important;  /* Optional: volle Breite */
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# Enhanced CSS for Dark Mode compatibility
+st.markdown("""
+<style>
+    :root {
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+        --accent-color: #f56565;
+        --success-color: #48bb78;
+        --warning-color: #ed8936;
+        --error-color: #f56565;
+        
+        /* Light mode colors */
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --bg-tertiary: #f1f3f5;
+        --text-primary: #1a202c;
+        --text-secondary: #4a5568;
+        --border-color: #e2e8f0;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Dark mode colors */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #3a3a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border-color: #4a4a4a;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+    }
+    
+    /* Force dark mode for Streamlit dark theme */
+    .stApp[data-theme="dark"] {
+        --bg-primary: #0e1117;
+        --bg-secondary: #262730;
+        --bg-tertiary: #3a3a3a;
+        --text-primary: #ffffff;
+        --text-secondary: #a0a0a0;
+        --border-color: #4a4a4a;
+        --shadow-color: rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Main header styling with theme support */
     .main-header {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         padding: 2rem;
         border-radius: 10px;
         margin-bottom: 2rem;
         text-align: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 20px var(--shadow-color);
+        border: 1px solid var(--border-color);
     }
     
-    /* Card styling */
+    /* Card styling with theme support */
     .stMetric {
-        background-color: #f8f9fa;
+        background-color: var(--bg-secondary) !important;
         padding: 1rem;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 8px var(--shadow-color);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary) !important;
     }
     
-    /* Tab styling */
+    .stMetric label {
+        color: var(--text-secondary) !important;
+    }
+    
+    /* Tab styling with theme support */
     .stTabs [data-baseweb="tab-list"] {
         gap: 24px;
-        background-color: #f1f3f5;
+        background-color: var(--bg-tertiary);
         padding: 0.5rem;
         border-radius: 10px;
+        border: 1px solid var(--border-color);
     }
     
     .stTabs [data-baseweb="tab"] {
         height: 50px;
         padding-left: 20px;
         padding-right: 20px;
-        background-color: white;
+        background-color: var(--bg-primary);
         border-radius: 8px;
-        border: 2px solid #e9ecef;
+        border: 2px solid var(--border-color);
+        color: var(--text-primary);
     }
     
     .stTabs [aria-selected="true"] {
-        background-color: #667eea;
-        color: white;
-        border-color: #667eea;
+        background-color: var(--primary-color) !important;
+        color: white !important;
+        border-color: var(--primary-color) !important;
     }
     
-    /* Button styling */
+    /* Button styling with theme support */
     .stButton > button {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
+        background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+        color: white !important;
+        border: none !important;
         padding: 0.5rem 2rem;
         font-weight: 600;
         border-radius: 8px;
         transition: all 0.3s;
+        box-shadow: 0 2px 8px var(--shadow-color);
     }
     
     .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
     }
     
-    /* Success/Error message styling */
+    /* Info/Success/Error message styling with theme support */
+    .stAlert {
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 2px 8px var(--shadow-color);
+    }
+    
     .stSuccess {
-        background-color: #d4edda;
-        border-left: 4px solid #28a745;
-        padding: 1rem;
-        border-radius: 4px;
+        background-color: rgba(72, 187, 120, 0.1) !important;
+        border-left: 4px solid var(--success-color) !important;
+        color: var(--text-primary) !important;
     }
     
     .stError {
-        background-color: #f8d7da;
-        border-left: 4px solid #dc3545;
+        background-color: rgba(245, 101, 101, 0.1) !important;
+        border-left: 4px solid var(--error-color) !important;
+        color: var(--text-primary) !important;
+    }
+    
+    .stInfo {
+        background-color: rgba(102, 126, 234, 0.1) !important;
+        border-left: 4px solid var(--primary-color) !important;
+        color: var(--text-primary) !important;
+    }
+    
+    /* File uploader styling */
+    .stFileUploader > div {
+        background-color: var(--bg-secondary);
+        border: 2px dashed var(--border-color);
+        border-radius: 8px;
+        padding: 2rem;
+    }
+    
+    .stFileUploader:hover > div {
+        border-color: var(--primary-color);
+        background-color: rgba(102, 126, 234, 0.05);
+    }
+    
+    /* Audio recorder styling */
+    .stAudio {
+        background-color: var(--bg-secondary);
+        border-radius: 8px;
         padding: 1rem;
-        border-radius: 4px;
+        border: 1px solid var(--border-color);
+    }
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background-color: var(--bg-secondary) !important;
+        color: var(--text-primary) !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--border-color) !important;
+    }
+    
+    .streamlit-expanderContent {
+        background-color: var(--bg-secondary) !important;
+        border: 1px solid var(--border-color) !important;
+        border-top: none !important;
+    }
+    
+    /* Markdown styling for dark mode */
+    .stMarkdown {
+        color: var(--text-primary);
+    }
+    
+    /* Grid styling for emotion cards */
+    .emotion-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+    
+    .emotion-card {
+        background: var(--bg-secondary);
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 8px var(--shadow-color);
+        transition: all 0.3s ease;
+    }
+    
+    .emotion-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--shadow-color);
+    }
+    
+    /* Footer styling */
+    .footer {
+        text-align: center;
+        color: var(--text-secondary);
+        padding: 1rem;
+        background-color: var(--bg-secondary);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        margin-top: 2rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -116,7 +262,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def analyze_audio_amplitude(audio_path):
-    """Analyze audio amplitude and create visualization."""
+    """Analyze audio amplitude and create visualization optimized for dark mode."""
     try:
         # Read WAV file
         with wave.open(audio_path, 'rb') as wav_file:
@@ -162,23 +308,29 @@ def analyze_audio_amplitude(audio_path):
         threshold = np.max(amplitude_envelope) * 0.3
         high_amplitude_mask = amplitude_envelope > threshold
         
-        # Create the plot with improved styling
-        plt.style.use('seaborn-v0_8-darkgrid')
+        # Create the plot with dark mode support
+        plt.style.use('dark_background')
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True)
         
-        # Color scheme
+        # Color scheme optimized for dark mode
         primary_color = '#667eea'
         secondary_color = '#764ba2'
-        highlight_color = '#f56565'
+        highlight_color = '#ff6b6b'
+        text_color = '#ffffff'
+        grid_color = '#4a4a4a'
+        
+        # Set figure background
+        fig.patch.set_facecolor('#1a1a1a')
         
         # Plot 1: Waveform with highlighted regions
-        ax1.plot(time_axis, audio_array, color=primary_color, alpha=0.7, linewidth=0.8)
-        ax1.set_ylabel('Amplitude', fontsize=12, fontweight='bold')
-        ax1.set_title('Audio Waveform with Important Regions Highlighted', fontsize=16, fontweight='bold', pad=20)
-        ax1.grid(True, alpha=0.3, linestyle='--')
+        ax1.plot(time_axis, audio_array, color=primary_color, alpha=0.8, linewidth=0.8)
+        ax1.set_ylabel('Amplitude', fontsize=12, fontweight='bold', color=text_color)
+        ax1.set_title('Audio Waveform with Important Regions Highlighted', fontsize=16, fontweight='bold', pad=20, color=text_color)
+        ax1.grid(True, alpha=0.3, linestyle='--', color=grid_color)
         ax1.set_ylim(-1.1, 1.1)
+        ax1.set_facecolor('#262730')
         
-        # Highlight important regions with better visual
+        # Highlight important regions
         in_region = False
         start_idx = 0
         
@@ -189,38 +341,50 @@ def analyze_audio_amplitude(audio_path):
             elif not high_amplitude_mask[i] and in_region:
                 in_region = False
                 ax1.axvspan(time_axis[start_idx], time_axis[i], 
-                           alpha=0.2, color=highlight_color, 
+                           alpha=0.3, color=highlight_color, 
                            label='High Energy Region' if start_idx == 0 else "")
         
         # Handle case where region extends to end
         if in_region:
-            ax1.axvspan(time_axis[start_idx], time_axis[-1], alpha=0.2, color=highlight_color)
+            ax1.axvspan(time_axis[start_idx], time_axis[-1], alpha=0.3, color=highlight_color)
         
         # Add legend for waveform plot
         if np.any(high_amplitude_mask):
-            ax1.legend(loc='upper right', frameon=True, facecolor='white', edgecolor='gray')
+            legend1 = ax1.legend(loc='upper right', frameon=True, facecolor='#262730', edgecolor=grid_color)
+            legend1.get_frame().set_alpha(0.8)
+            for text in legend1.get_texts():
+                text.set_color(text_color)
         
         # Plot 2: Amplitude envelope with gradient fill
         ax2.plot(time_axis, amplitude_envelope, color=secondary_color, linewidth=3, label='Amplitude Envelope')
         ax2.axhline(y=threshold, color=highlight_color, linestyle='--', linewidth=2, 
-                    alpha=0.7, label=f'Threshold (30% of max)')
+                    alpha=0.8, label=f'Threshold (30% of max)')
         
         # Gradient fill for high amplitude regions
         ax2.fill_between(time_axis, 0, amplitude_envelope, where=high_amplitude_mask, 
                         alpha=0.4, color=highlight_color, label='High Energy Regions')
         ax2.fill_between(time_axis, 0, amplitude_envelope, where=~high_amplitude_mask, 
-                        alpha=0.2, color=primary_color)
+                        alpha=0.3, color=primary_color)
         
-        ax2.set_xlabel('Time (seconds)', fontsize=12, fontweight='bold')
-        ax2.set_ylabel('RMS Amplitude', fontsize=12, fontweight='bold')
-        ax2.set_title('Amplitude Envelope Analysis', fontsize=16, fontweight='bold', pad=20)
-        ax2.grid(True, alpha=0.3, linestyle='--')
-        ax2.legend(loc='upper right', frameon=True, facecolor='white', edgecolor='gray')
+        ax2.set_xlabel('Time (seconds)', fontsize=12, fontweight='bold', color=text_color)
+        ax2.set_ylabel('RMS Amplitude', fontsize=12, fontweight='bold', color=text_color)
+        ax2.set_title('Amplitude Envelope Analysis', fontsize=16, fontweight='bold', pad=20, color=text_color)
+        ax2.grid(True, alpha=0.3, linestyle='--', color=grid_color)
+        ax2.set_facecolor('#262730')
+        
+        legend2 = ax2.legend(loc='upper right', frameon=True, facecolor='#262730', edgecolor=grid_color)
+        legend2.get_frame().set_alpha(0.8)
+        for text in legend2.get_texts():
+            text.set_color(text_color)
+        
         ax2.set_ylim(0, max(amplitude_envelope) * 1.1)
+        
+        # Style tick labels
+        ax1.tick_params(colors=text_color)
+        ax2.tick_params(colors=text_color)
         
         # Improve overall appearance
         plt.tight_layout()
-        fig.patch.set_facecolor('white')
         
         # Calculate statistics
         total_duration = duration
@@ -264,21 +428,20 @@ def process_audio_file(filename, source_name, raw_path):
         
         # Check if files are saved correctly
         if os.path.exists(raw_path) and os.path.exists(meta_path):
-            st.success("✅ File saved and metadata written! Starting inference...")
+            # st.success("✅ File saved and metadata written! Starting inference...")
             subprocess.run("prefect deployment run 'dvc_pipeline/dvc_pipeline'", shell=True, check=True)
         else:
             st.error("❌ File or metadata not saved correctly.")
             return
         
-        # Wait for result with progress bar
-        timeout = 30  # seconds
+        # Wait for result without progress bar - simplified approach
+        timeout = 60  # seconds
         interval = 2
         elapsed = 0
         matched = None
         
-        progress_bar = st.progress(0)
         status_text = st.empty()
-        status_text.info("⏳ Waiting for inference result...")
+        # status_text.info("⏳ Processing... This may take up to 30 seconds.")
         
         while elapsed < timeout:
             if os.path.exists(RESULT_FILE):
@@ -293,10 +456,7 @@ def process_audio_file(filename, source_name, raw_path):
             
             time.sleep(interval)
             elapsed += interval
-            progress = min(elapsed / timeout, 0.95)
-            progress_bar.progress(progress)
         
-        progress_bar.empty()
         status_text.empty()
         
         if not matched:
@@ -328,10 +488,10 @@ def process_audio_file(filename, source_name, raw_path):
             
             with col2:
                 st.markdown(f"""
-                <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, {emotion_color}20 0%, {emotion_color}10 100%); border-radius: 15px; border: 2px solid {emotion_color}40;">
+                <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, {emotion_color}20 0%, {emotion_color}10 100%); border-radius: 15px; border: 2px solid {emotion_color}40; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
                     <h1 style="font-size: 5rem; margin: 0;">{result_emoji}</h1>
                     <h2 style="color: {emotion_color}; margin: 0.5rem 0; font-size: 2rem;">{emotion_name}</h2>
-                    <p style="color: #666; font-size: 1rem;">Emotion detected with AI</p>
+                    <p style="color: var(--text-secondary); font-size: 1rem;">Emotion detected with AI</p>
                 </div>
                 """, unsafe_allow_html=True)
             
@@ -412,11 +572,10 @@ def process_audio_file(filename, source_name, raw_path):
 # Create modern tabs
 tab1, tab2, tab3 = st.tabs(["📁 Upload Audio", "🎙️ Record Audio", "ℹ️ About"])
 
-# Tab 1: File Upload - ANGEPASST für zentrierte Ausrichtung
+# Tab 1: File Upload
 with tab1:
     st.markdown("### Upload your audio file")
     
-    # Geändert von [3, 1] auf [1, 2, 1] für Zentrierung
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
@@ -458,7 +617,7 @@ with tab1:
                         with st.expander("Show error details"):
                             st.text(traceback.format_exc())
 
-# Tab 2: Audio Recording - Layout bleibt unverändert (bereits zentriert)
+# Tab 2: Audio Recording
 with tab2:
     st.markdown("### Record audio directly from your browser")
     
@@ -511,7 +670,7 @@ with tab2:
                         with st.expander("Show error details"):
                             st.text(traceback.format_exc())
 
-# Tab 3: About section
+# Tab 3: About section with enhanced dark mode styling
 with tab3:
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -520,31 +679,36 @@ with tab3:
         ### 🎯 About Emotion Recognition
         
         This application uses advanced AI to analyze emotions in speech. It can detect:
+        """)
         
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 2rem 0;">
-            <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; text-align: center;">
+        # Enhanced emotion grid with dark mode support
+        st.markdown("""
+        <div class="emotion-grid">
+            <div class="emotion-card">
                 <span style="font-size: 2rem;">😡</span><br><strong>Angry</strong>
             </div>
-            <div style="background: #dcfce7; padding: 1rem; border-radius: 8px; text-align: center;">
+            <div class="emotion-card">
                 <span style="font-size: 2rem;">🤢</span><br><strong>Disgust</strong>
             </div>
-            <div style="background: #e9d5ff; padding: 1rem; border-radius: 8px; text-align: center;">
+            <div class="emotion-card">
                 <span style="font-size: 2rem;">😨</span><br><strong>Fearful</strong>
             </div>
-            <div style="background: #fed7aa; padding: 1rem; border-radius: 8px; text-align: center;">
+            <div class="emotion-card">
                 <span style="font-size: 2rem;">😊</span><br><strong>Happy</strong>
             </div>
-            <div style="background: #e5e7eb; padding: 1rem; border-radius: 8px; text-align: center;">
+            <div class="emotion-card">
                 <span style="font-size: 2rem;">😐</span><br><strong>Neutral</strong>
             </div>
-            <div style="background: #dbeafe; padding: 1rem; border-radius: 8px; text-align: center;">
+            <div class="emotion-card">
                 <span style="font-size: 2rem;">😢</span><br><strong>Sad</strong>
             </div>
-            <div style="background: #ffedd5; padding: 1rem; border-radius: 8px; text-align: center;">
+            <div class="emotion-card">
                 <span style="font-size: 2rem;">😲</span><br><strong>Surprised</strong>
             </div>
         </div>
+        """, unsafe_allow_html=True)
         
+        st.markdown("""
         ### 🔬 How it works
         
         1. **Upload or Record** - Provide an audio sample
@@ -558,6 +722,7 @@ with tab3:
         - **File Upload** - Analyze existing WAV files
         - **Visual Analysis** - See amplitude patterns and energy distribution
         - **Detailed Statistics** - Understand your audio characteristics
+        - **Dark Mode Support** - Optimized for both light and dark themes
         
         ### 🎯 Best Practices
         
@@ -565,15 +730,16 @@ with tab3:
         - Minimize background noise
         - Speak with genuine emotion for best results
         - Recordings of 3-10 seconds work best
-        """, unsafe_allow_html=True)
+        """)
 
-# Footer
+# Footer with dark mode styling
 st.markdown("---")
 st.markdown(
     """
-    <div style="text-align: center; color: #666; padding: 1rem;">
-        <p>Built with ❤️ using Streamlit | Emotion Recognition v2.0</p>
-    </div>
+    <p style="text-align: center; color: var(--text-secondary); margin-top: 2rem;">
+        Built with ❤️ using Streamlit | Emotion Recognition v2.1
+    </p>
     """,
     unsafe_allow_html=True
 )
+
